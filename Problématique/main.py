@@ -10,6 +10,7 @@ from torchvision import transforms
 from dataset import ConveyorSimulator
 from metrics import AccuracyMetric, MeanAveragePrecisionMetric, SegmentationIntersectionOverUnionMetric
 from visualizer import Visualizer
+from models.classification_network import ClassificationModel
 
 TRAIN_VALIDATION_SPLIT = 0.9
 CLASS_PROBABILITY_THRESHOLD = 0.5
@@ -35,8 +36,8 @@ class ConveyorCnnTrainer():
         self._weights_path = os.path.join(self._dir_path, 'weights', 'task_' + self._args.task + '_best.pt')
 
         # Initialisation du model et des classes pour l'entraînement
-        self._model = self._create_model(self._args.task).to(self._device)
         self._criterion = self._create_criterion(self._args.task)
+        self._model = self._create_model(self._args.task).to(self._device)
 
         print('Model : ')
         print(self._model)
@@ -44,8 +45,8 @@ class ConveyorCnnTrainer():
 
     def _create_model(self, task):
         if task == 'classification':
-            # À compléter
-            raise NotImplementedError()
+            model = ClassificationModel(3)
+            return model.get_model()
         elif task == 'detection':
             # À compléter
             raise NotImplementedError()
@@ -57,14 +58,15 @@ class ConveyorCnnTrainer():
 
     def _create_criterion(self, task):
         if task == 'classification':
-            # À compléter
-            raise NotImplementedError()
+            # Fonction de coût pour la classification
+            return torch.nn.CrossEntropyLoss()
         elif task == 'detection':
-            # À compléter
+            # Fonction de coût pour la détection
+            return torch.nn.CrossEntropyLoss()
             raise NotImplementedError()
         elif task == 'segmentation':
-            # À compléter
-            raise NotImplementedError()
+            # Fonction de coût pour la segmentation
+            return torch.nn.CrossEntropyLoss()
         else:
             raise ValueError('Not supported task')
 
@@ -247,8 +249,15 @@ class ConveyorCnnTrainer():
         :return: La valeur de la fonction de coût pour le lot
         """
 
-        # À compléter
-        raise NotImplementedError()
+        optimizer.zero_grad()
+        output = model(image)
+        loss = criterion(output, class_labels)
+        metric.accumulate(output, class_labels)
+        loss.backward()
+        optimizer.step()
+
+        return loss
+
 
     def _test_batch(self, task, model, criterion, metric, image, segmentation_target, boxes, class_labels):
         """
