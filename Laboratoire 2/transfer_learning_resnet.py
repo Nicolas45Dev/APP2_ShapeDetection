@@ -19,16 +19,16 @@ images_path = os.path.join(dir_path, 'test_images')
 weights_path = os.path.join(dir_path, 'weights', 'no1_best.pt')
 
 # ---------------- Paramètres et hyperparamètres ----------------#
-use_cpu = False  # Forcer à utiliser le cpu?
+use_cpu = True  # Forcer à utiliser le cpu?
 save_model = True  # Sauvegarder le meilleur modèle ?
 
 input_channels = 3  # Nombre de canaux d'entree
 num_classes = 21  # Nombre de classes
-batch_size = 64  # Taille des lots pour l'entraînement
-val_test_batch_size = 64  # Taille des lots pour validation et test
-epochs = 7  # Nombre d'itérations (epochs)
-train_val_split = 0.7  # Proportion d'échantillons
-lr = 0.0015  # Taux d'apprentissage
+batch_size = 32  # Taille des lots pour l'entraînement
+val_test_batch_size = 32  # Taille des lots pour validation et test
+epochs = 3  # Nombre d'itérations (epochs)
+train_val_split = 0.8  # Proportion d'échantillons
+lr = 0.001  # Taux d'apprentissage
 random_seed = 1  # Pour la répétabilité
 num_workers = 6  # Nombre de threads pour chargement des données
 input_size = 100  # Taille (l&h) des images désirée
