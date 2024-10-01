@@ -7,9 +7,30 @@ class LocalizationLoss(nn.Module):
         super(LocalizationLoss, self).__init__()
         self._alpha = alpha
 
+
     def forward(self, output, target):
+        """
+        Compute the localization loss between the output and the target tensor, every value are in [0, 1]
+        :param output: output tensor of shape  N x (C + 4) where C is the number of classes and N is the number of samples in the batch
+        :param target: tensor of shape (N, 5)
+        :return:
+        """
         # ------------------------ Laboratoire 2 - Question 4 - Début de la section à compléter ------------------------
-        # À compléter
+        # Calculer la perte de localisation
+        localization_loss = torch.nn.MSELoss()
+        output_localization = output[:, -4:]
+        target_localization = target[:, -4:]
+        localization_loss = localization_loss(output_localization, target_localization)
+
+        # Calculer la perte de classification
+        classification_loss = torch.nn.BCELoss()
+        output_classification = output[:, :-4]
+        target_classification = target[:, :-1]
+        classification_loss = classification_loss(output_classification, target_classification)
+
+        # Retourner la somme des deux
+
+
         return torch.tensor(0.0)
         # ------------------------ Laboratoire 2 - Question 4 - Fin de la section à compléter --------------------------
 
