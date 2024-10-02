@@ -10,6 +10,7 @@ from torchvision import transforms
 
 from dataset import ConveyorSimulator
 from metrics import AccuracyMetric, MeanAveragePrecisionMetric, SegmentationIntersectionOverUnionMetric
+from models.Localisation_Loss import LocalizationLoss
 from visualizer import Visualizer
 from models.classification_network import ClassificationModel
 from models.segmentation_network import UNet
@@ -320,8 +321,9 @@ class ConveyorCnnTrainer():
             # À compléter
             raise NotImplementedError()
         elif task == 'segmentation':
-            # À compléter
-            raise NotImplementedError()
+            output = model(image)
+            loss = criterion(output, segmentation_target)
+            metric.accumulate(output, segmentation_target)
 
         return loss
 
