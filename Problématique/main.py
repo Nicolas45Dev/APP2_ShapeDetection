@@ -5,12 +5,14 @@ import os
 import numpy as np
 import torch
 import torch.optim as optim
+from tensorflow.python.ops.control_flow_util_v2 import output_all_intermediates
 from torchvision import transforms
 
 from dataset import ConveyorSimulator
 from metrics import AccuracyMetric, MeanAveragePrecisionMetric, SegmentationIntersectionOverUnionMetric
 from visualizer import Visualizer
 from models.classification_network import ClassificationModel
+from models.segmentation_network import UNet
 
 TRAIN_VALIDATION_SPLIT = 0.9
 CLASS_PROBABILITY_THRESHOLD = 0.5
@@ -50,8 +52,7 @@ class ConveyorCnnTrainer():
             # À compléter
             raise NotImplementedError()
         elif task == 'segmentation':
-            # À compléter
-            raise NotImplementedError()
+            return UNet(1, 4)
         else:
             raise ValueError('Not supported task')
 
@@ -180,6 +181,9 @@ class ConveyorCnnTrainer():
                     boxes = boxes.to(self._device)
                     labels = labels.to(self._device)
 
+                    # Show the image
+                    # visualizer.show_image(image, "Validation")
+
                     loss = self._test_batch(self._args.task, self._model, self._criterion, validation_metric,
                                             image, masks, boxes, labels)
                     validation_loss += loss.item()
@@ -248,13 +252,24 @@ class ConveyorCnnTrainer():
                 Si un 0 est présent à (i, 2), aucune croix n'est présente dans l'image i.
         :return: La valeur de la fonction de coût pour le lot
         """
-
-        optimizer.zero_grad()
-        output = model(image)
-        loss = criterion(output, class_labels)
-        metric.accumulate(output, class_labels)
-        loss.backward()
-        optimizer.step()
+        loss = 0
+        if task == 'classification':
+            optimizer.zero_grad()
+            output = model(image)
+            loss = criterion(output, class_labels)
+            metric.accumulate(output, class_labels)
+            loss.backward()
+            optimizer.step()
+        elif task == 'detection':
+            # À compléter
+            raise NotImplementedError()
+        elif task == 'segmentation':
+            optimizer.zero_grad()
+            output = model(image)
+            loss = criterion(output, segmentation_target)
+            metric.accumulate(output, segmentation_target)
+            loss.backward()
+            optimizer.step()
 
         return loss
 
@@ -301,6 +316,12 @@ class ConveyorCnnTrainer():
             output = model(image)
             loss = criterion(output, class_labels)
             metric.accumulate(output, class_labels)
+        elif task == 'detection':
+            # À compléter
+            raise NotImplementedError()
+        elif task == 'segmentation':
+            # À compléter
+            raise NotImplementedError()
 
         return loss
 

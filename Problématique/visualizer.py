@@ -9,7 +9,7 @@ from sympy.physics.control.control_plots import matplotlib
 
 from metrics import segmentation_intersection_over_union
 
-matplotlib.use('Qt5Agg')
+# matplotlib.use('Qt5Agg')
 
 class Visualizer:
     def __init__(self, mode, task, class_probability_threshold, confidence_threshold, segmentation_background_class):
@@ -150,3 +150,11 @@ class Visualizer:
 
         fig.savefig(self._prediction_path)
         plt.close(fig)
+
+    def show_image(self, image, title):
+        out_img = image[0].cpu().detach().numpy()
+
+        arr_ = np.squeeze(out_img)
+        plt.imshow(arr_, cmap='gray')
+        plt.title(title)
+        plt.show()
