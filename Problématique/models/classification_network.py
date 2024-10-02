@@ -1,35 +1,25 @@
 import torch
+import torch.nn as nn
+import torch.nn.functional as F
 
 class ClassificationModel(torch.nn.Module):
     def __init__(self, num_classes):
         super(ClassificationModel, self).__init__()
         self.num_classes = num_classes
 
-        # Definir l'architecture du réseau basé sur LeNet-5
-        self.model = torch.nn.Sequential(
-            torch.nn.Conv2d(1, 6, kernel_size=5),
-            torch.nn.ReLU(),
-            torch.nn.MaxPool2d(kernel_size=2),
-            torch.nn.Conv2d(6, 16, kernel_size=5),
-            torch.nn.ReLU(),
-            torch.nn.MaxPool2d(kernel_size=2),
-            torch.nn.Flatten(), # 32 x 1600 tensor size
-            torch.nn.Linear(16 * 10 * 10, 120),
-            torch.nn.ReLU(),
-            torch.nn.Linear(120, 84),
-            torch.nn.ReLU(),
-            torch.nn.Linear(84, num_classes),
-            torch.nn.ReLU()
-        )
-
-        # # Definir l'architecture du réseau basé sur MobileNetV2
-        # self.model = torch.hub.load('pytorch/vision:v0.9.0', 'mobilenet_v2', pretrained=True)
-        # self.model.classifier[1] = torch.nn.Linear(1280, num_classes)
-        # self.model = self.model.cuda()
+        self.conv1 = nn.Conv2d(in_channels=1, out_channels=16, kernel_size=3, stride=1, padding=1)
+        self.conv2 = nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3, stride=1, padding=1)
+        self.pool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
+        self.fc1 = nn.Linear(32 * 13 * 13, 64)  # 13x13 car les images sont réduites après deux couches de maxpool
+        self.fc2 = nn.Linear(64, num_classes)
 
     def get_model(self):
         return self.model
 
-    def forward(self, data):
-        data = self.model(data)
-        return data
+    def forward(self, x):
+        x = self.pool(torch.relu(self.conv1(x)))  # Sortie : (N, 16, 26, 26)
+        x = self.pool(torch.relu(self.conv2(x)))  # Sortie : (N, 32, 13, 13)
+        x = x.view(-1, 32 * 13 * 13)              # Aplatir le tenseur
+        x = torch.relu(self.fc1(x))
+        x = self.fc2(x)
+        return x

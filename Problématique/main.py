@@ -45,8 +45,7 @@ class ConveyorCnnTrainer():
 
     def _create_model(self, task):
         if task == 'classification':
-            model = ClassificationModel(3)
-            return model.get_model()
+            return ClassificationModel(3)
         elif task == 'detection':
             # À compléter
             raise NotImplementedError()
@@ -59,7 +58,7 @@ class ConveyorCnnTrainer():
     def _create_criterion(self, task):
         if task == 'classification':
             # Fonction de coût pour la classification
-            return torch.nn.CrossEntropyLoss()
+            return torch.nn.BCEWithLogitsLoss()
         elif task == 'detection':
             # Fonction de coût pour la détection
             return torch.nn.CrossEntropyLoss()
@@ -208,7 +207,8 @@ class ConveyorCnnTrainer():
 
         ans = input('Do you want ot test? (y/n):')
         if ans == 'y':
-            self.test()
+            for i in range(5):
+                self.test()
 
     def _train_batch(self, task, model, criterion, metric, optimizer, image, segmentation_target, boxes, class_labels):
         """
@@ -296,9 +296,13 @@ class ConveyorCnnTrainer():
                 Si un 0 est présent à (i, 2), aucune croix n'est présente dans l'image i.
         :return: La valeur de la fonction de coût pour le lot
         """
+        loss = 0
+        if task == 'classification':
+            output = model(image)
+            loss = criterion(output, class_labels)
+            metric.accumulate(output, class_labels)
 
-        # À compléter
-        raise NotImplementedError()
+        return loss
 
 
 if __name__ == '__main__':

@@ -5,9 +5,11 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.lines import Line2D
+from sympy.physics.control.control_plots import matplotlib
 
 from metrics import segmentation_intersection_over_union
 
+matplotlib.use('Qt5Agg')
 
 class Visualizer:
     def __init__(self, mode, task, class_probability_threshold, confidence_threshold, segmentation_background_class):
