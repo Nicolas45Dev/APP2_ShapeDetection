@@ -10,6 +10,8 @@ from torchvision import transforms, datasets
 # Inclure le modèle
 from models.net import Net
 
+plt.switch_backend('Qt5Agg')
+
 if __name__ == '__main__':
     # Génération des 'path'
     dir_path = os.path.dirname(__file__)
@@ -23,11 +25,11 @@ if __name__ == '__main__':
     use_cpu = True  # Forcer a utiliser le cpu?
     save_model = True  # Sauvegarder le meilleur modèle ?
 
-    batch_size = 64  # Taille des lots pour l'entraînement
-    val_test_batch_size = 64  # Taille des lots pour validation et test
-    epochs = 25  # Nombre d'itérations (epochs)
+    batch_size = 10  # Taille des lots pour l'entraînement
+    val_test_batch_size = 10  # Taille des lots pour validation et test
+    epochs = 20  # Nombre d'itérations (epochs)
     train_val_split = 0.7  # Proportion d'échantillons
-    lr = 0.001  # Pas d'apprentissage
+    lr = 0.002  # Pas d'apprentissage
     random_seed = 1  # Pour répétabilité
     num_workers = 6  # Nombre de threads pour chargement des données
     # ------------ Fin des paramètres et hyper-parametres ------------#
@@ -64,16 +66,14 @@ if __name__ == '__main__':
 
     dataset_train, dataset_val = random_split(dataset, [n_train_samples, n_val_samples]) # a modifie
 
+    # Reduce the dataset size for testing
+    # dataset_train = torch.utils.data.Subset(dataset_train, range(0, 42))
+    # dataset_val = torch.utils.data.Subset(dataset_val, range(0, 18))
+
     print('Number of training samples   : ', len(dataset_train))
     print('Number of validation samples : ', len(dataset_val))
     print('Number of test samples : ', len(dataset_test))
     print('\n')
-
-    img, label = dataset_val[0]
-    plt.imshow(img[0], cmap='gray')
-    plt.title('Label : ' + str(label))
-    plt.show()
-
     # ---------------------- Laboratoire 1 - Question 1 - Fin de la section à compléter --------------------------------
 
 
@@ -98,6 +98,8 @@ if __name__ == '__main__':
     loss_criterion = torch.nn.CrossEntropyLoss()
     # ---------------------- Laboratoire 1 - Question 3 - Fin de la section à compléter --------------------
 
+    plt.ion()
+    fig = plt.figure()
 
     if train:
         print('Starting training')
@@ -177,9 +179,11 @@ if __name__ == '__main__':
             plt.plot(range(1, epoch + 1), epochs_train_losses, color='blue', label='Training loss', linestyle=':')
             plt.plot(range(1, epoch + 1), epochs_val_losses, color='red', label='Validation loss', linestyle='-.')
             plt.legend()
-            plt.draw()
-            plt.pause(0.001)
 
+            fig.canvas.draw()
+            fig.canvas.flush_events()
+
+        plt.ioff()
         plt.show()
 
     if test:

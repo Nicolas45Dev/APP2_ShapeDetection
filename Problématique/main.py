@@ -11,9 +11,12 @@ from torchvision import transforms
 from dataset import ConveyorSimulator
 from metrics import AccuracyMetric, MeanAveragePrecisionMetric, SegmentationIntersectionOverUnionMetric
 from models.Localisation_Loss import LocalizationLoss
+from models.detection_network import DetectionModel
 from visualizer import Visualizer
 from models.classification_network import ClassificationModel
 from models.segmentation_network import UNet
+from models.detection_network import DetectionModel
+from models.Localisation_Loss import LocalizationLoss
 
 TRAIN_VALIDATION_SPLIT = 0.9
 CLASS_PROBABILITY_THRESHOLD = 0.5
@@ -50,8 +53,7 @@ class ConveyorCnnTrainer():
         if task == 'classification':
             return ClassificationModel(3)
         elif task == 'detection':
-            # À compléter
-            raise NotImplementedError()
+            return DetectionModel(4)
         elif task == 'segmentation':
             return UNet(1, 4)
         else:
@@ -63,7 +65,7 @@ class ConveyorCnnTrainer():
             return torch.nn.BCEWithLogitsLoss()
         elif task == 'detection':
             # Fonction de coût pour la détection
-            return torch.nn.CrossEntropyLoss()
+            return LocalizationLoss(2)
             raise NotImplementedError()
         elif task == 'segmentation':
             # Fonction de coût pour la segmentation
@@ -262,8 +264,12 @@ class ConveyorCnnTrainer():
             loss.backward()
             optimizer.step()
         elif task == 'detection':
-            # À compléter
-            raise NotImplementedError()
+            optimizer.zero_grad()
+            output = model(image)
+            loss = criterion(output, boxes)
+            metric.accumulate(output, boxes)
+            loss.backward()
+            optimizer.step()
         elif task == 'segmentation':
             optimizer.zero_grad()
             output = model(image)
@@ -318,8 +324,9 @@ class ConveyorCnnTrainer():
             loss = criterion(output, class_labels)
             metric.accumulate(output, class_labels)
         elif task == 'detection':
-            # À compléter
-            raise NotImplementedError()
+            output = model(image)
+            loss = criterion(output, boxes)
+            metric.accumulate(output, boxes)
         elif task == 'segmentation':
             output = model(image)
             loss = criterion(output, segmentation_target)

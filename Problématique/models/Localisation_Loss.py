@@ -10,18 +10,18 @@ class LocalizationLoss(nn.Module):
         self._alpha = alpha
 
     def forward(self, output, target):
-        w = target[:,2] - target[:,0]
-        h = target[:,3] - target[:,1]
+        # Output se compose de 4 colonnes : x, y, w, h, une prédiction de la boite dans l'image (N, 4)
+        # Target se compose de 5 colonnes : x, y, w, h, c pour chaque boîte de forme (N, 3, 5)
+        # Somme la différence entre les coordonnées prédites et les coordonnées réelles
+        x1 = output[:,:4]
+        x2 = output[:,4:8]
+        x3 = output[:,8:12]
+        classes = output[:,12:]
 
-        x = w / 2 + target[:,0]
-        y = h / 2 + target[:,1]
+        box = torch.stack([x1, y1, w1, h1], dim=1)
 
-        c = target[:,4]
-        box = torch.stack([x, y, w, h, c], dim=1)
-
-        loss = nn.MSELoss() #nn.CrossEntropyLoss()
-        loss_entropy = nn.CrossEntropyLoss()
-        return loss(output[:,:4], box[:,:4]) + self._alpha * loss_entropy(output[:,4:], c.long())
+        loss = nn.MSELoss() #nn.CrossEntropyLoss()       loss_entropy = nn.CrossEntropyLoss()
+        return loss(output[:,:4], target[:,:,:4]) + self._alpha * loss_entropy(output[:,4:], c.long())
 
 def check_loss_output_size(loss):
     assert loss.size() == torch.Size([]), f'La sortie de la fonction de coût ({loss.item()}) doit être un scalaire.'
