@@ -5,18 +5,15 @@ import os
 import numpy as np
 import torch
 import torch.optim as optim
-from tensorflow.python.ops.control_flow_util_v2 import output_all_intermediates
 from torchvision import transforms
 
 from dataset import ConveyorSimulator
 from metrics import AccuracyMetric, MeanAveragePrecisionMetric, SegmentationIntersectionOverUnionMetric
 from models.Localisation_Loss import LocalizationLoss
-from models.detection_network import DetectionModel
-from visualizer import Visualizer
 from models.classification_network import ClassificationModel
-from models.segmentation_network import UNet
 from models.detection_network import DetectionModel
-from models.Localisation_Loss import LocalizationLoss
+from models.segmentation_network import UNet
+from visualizer import Visualizer
 
 TRAIN_VALIDATION_SPLIT = 0.9
 CLASS_PROBABILITY_THRESHOLD = 0.5

@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from triton.language import tensor
 
 
 class DetectionModel(torch.nn.Module):
@@ -27,7 +26,7 @@ class DetectionModel(torch.nn.Module):
         self.pool3 = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)#128x3x3
         self.fc1 = nn.Linear(128 * 3 * 3, 500)
         self.fc2 = nn.Linear(500, 500)
-        self.fc3 = nn.Linear(500, 3 + 12)
+        self.fc3 = nn.Linear(500, 3 * 6)
 
     def get_model(self):
         return self.model
@@ -42,8 +41,8 @@ class DetectionModel(torch.nn.Module):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
-        classes = torch.softmax(x[:,:3], dim=1)
-        x1 = torch.sigmoid(x[:,3:7])
-        x2 = torch.sigmoid(x[:,7:11])
-        x3 = torch.sigmoid(x[:,11:15])
+        classes = torch.softmax(x[:,:9], dim=1)
+        x1 = torch.sigmoid(x[:,9:12])
+        x2 = torch.sigmoid(x[:,12:15])
+        x3 = torch.sigmoid(x[:,15:18])
         return torch.cat((x1, x2, x3, classes), dim=1)

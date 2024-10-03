@@ -18,11 +18,11 @@ class LocalizationLoss(nn.Module):
         y = h / 2 + target[:,1]
 
         c = target[:,4]
-        box = torch.stack([x, y, w, h, c], dim=1)
+        box = torch.stack([x, y, w, h], dim=1)
 
         loss = nn.MSELoss() #nn.CrossEntropyLoss()
         loss_entropy = nn.CrossEntropyLoss()
-        return loss(output[:,:4], box[:,:4]) + self._alpha * loss_entropy(output[:,4:], c.long())
+        return loss(output[:,:4], box) + self._alpha * loss_entropy(output[:,4:], c.long())
         # ------------------------ Laboratoire 2 - Question 4 - Fin de la section à compléter --------------------------
 
 

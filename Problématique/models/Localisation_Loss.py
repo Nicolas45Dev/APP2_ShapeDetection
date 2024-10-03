@@ -1,7 +1,8 @@
+from inspect import stack
+
 import numpy as np
 import torch
 import torch.nn as nn
-from sympy.physics.units import length
 
 
 class LocalizationLoss(nn.Module):
@@ -16,12 +17,17 @@ class LocalizationLoss(nn.Module):
         x1 = output[:,:4]
         x2 = output[:,4:8]
         x3 = output[:,8:12]
-        classes = output[:,12:]
-
-        box = torch.stack([x1, y1, w1, h1], dim=1)
-
-        loss = nn.MSELoss() #nn.CrossEntropyLoss()       loss_entropy = nn.CrossEntropyLoss()
-        return loss(output[:,:4], target[:,:,:4]) + self._alpha * loss_entropy(output[:,4:], c.long())
+        classes1 = output[:, 12:15]
+        classes2 = output[:, 15:18]
+        classes3 = output[:, 18:21]
+        classes = torch.stack([classes1, classes2, classes3], dim=1)
+        c = target[:,:,4:]
+        result1 = torch.stack([x1, x2, x3], dim=1)
+        loss = nn.MSELoss()
+        loss_entropy = nn.CrossEntropyLoss()
+        mse = loss(result1[:,:,0:3], target[:,:,1:4])
+        entropy = loss_entropy(classes, c)
+        return loss(result1[:,:,0:3], target[:,:,1:4]) + self._alpha * loss_entropy(classes, c.long())
 
 def check_loss_output_size(loss):
     assert loss.size() == torch.Size([]), f'La sortie de la fonction de coût ({loss.item()}) doit être un scalaire.'
