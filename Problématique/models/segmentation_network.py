@@ -8,7 +8,7 @@ class UNet(nn.Module):
         # ------------------------ Laboratoire 2 - Question 5 - Début de la section à compléter ------------------------
 
         # Down 1
-        self.conv_1_1 = nn.Conv2d(input_channels, 32, kernel_size=3, padding=1, stride=1)
+        self.conv_1_1 = nn.Conv2d(input_channels, 16, kernel_size=3, padding=1, stride=1)
         self.relu_1_1 = nn.ReLU()
         self.conv_1_2 = nn.Conv2d(16, 16, kernel_size=3, padding=1, stride=1)
         self.relu_1_2 = nn.ReLU()
@@ -125,4 +125,3 @@ class UNet(nn.Module):
         x = self.output_conv(x)
 
         return x
-        # ------------------------ Laboratoire 2 - Question 5 - Fin de la section à compléter --------------------------

@@ -43,7 +43,6 @@ class DetectionModel(torch.nn.Module):
         x = x.view(-1, 48 * 3 * 3)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
-        # x = self.bn1(x)
         x = self.fc3(x)
         N = torch.softmax(x[:, :9], dim=1) # Prédiction de la classe
         C = torch.sigmoid(x[:, 9:]) # Prédiction des coordonnées et de la taille de la boîte
