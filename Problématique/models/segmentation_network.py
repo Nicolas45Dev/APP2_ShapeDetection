@@ -34,13 +34,6 @@ class UNet(nn.Module):
         self.conv_4_2 = nn.Conv2d(128, 128, kernel_size=3, padding=1, stride=1)
         self.relu_4_2 = nn.ReLU() # Sortie vers Concate
 
-        # Down 5
-        # self.maxpool_5 = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
-        # self.conv_5_1 = nn.Conv2d(128, 256, kernel_size=3, padding=1, stride=1)
-        # self.relu_5_1 = nn.ReLU()
-        # self.conv_5_2 = nn.Conv2d(256, 128, kernel_size=3, padding=1, stride=1)
-        # self.relu_5_2 = nn.ReLU()
-
         # Up 6
         # self.upsample_6 = nn.ConvTranspose2d(128, 128, kernel_size=2, stride=2, padding=0)
         self.conv_6_1 = nn.Conv2d(256, 128, kernel_size=3, padding=1, stride=1)
@@ -101,18 +94,8 @@ class UNet(nn.Module):
         x = self.relu_4_1(x)
         x = self.conv_4_2(x)
         x = self.relu_4_2(x)
-        # self.hidden_h4 = x
-
-        # Down 5
-        # x = self.maxpool_5(x)
-        # x = self.conv_5_1(x)
-        # x = self.relu_5_1(x)
-        # x = self.conv_5_2(x)
-        # x = self.relu_5_2(x)
 
         # Up 6
-        # x = self.upsample_6(x)
-        # x = self.conv_6_1(torch.cat([x,self.hidden_h4], dim=1))
         x = self.conv_6_1(torch.cat([x, x], dim=1))#13
         x = self.relu_6_1(x)
         x = self.conv_6_2(x)
@@ -140,7 +123,6 @@ class UNet(nn.Module):
         x = self.relu_9_2(x)
 
         x = self.output_conv(x)
-        # x = torch.sigmoid(x)
 
         return x
         # ------------------------ Laboratoire 2 - Question 5 - Fin de la section à compléter --------------------------
