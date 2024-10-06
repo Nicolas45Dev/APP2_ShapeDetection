@@ -18,7 +18,7 @@ from models.segmentation_network import UNet
 from models.detection_network import DetectionModel
 from models.Localisation_Loss import LocalizationLoss
 
-TRAIN_VALIDATION_SPLIT = 0.85
+TRAIN_VALIDATION_SPLIT = 0.9
 CLASS_PROBABILITY_THRESHOLD = 0.5
 INTERSECTION_OVER_UNION_THRESHOLD = 0.5
 CONFIDENCE_THRESHOLD = 0.5
@@ -53,7 +53,7 @@ class ConveyorCnnTrainer():
         if task == 'classification':
             return ClassificationModel(3)
         elif task == 'detection':
-            return DetectionModel(4)
+            return DetectionModel(3)
         elif task == 'segmentation':
             return UNet(1, 4)
         else:
@@ -65,7 +65,7 @@ class ConveyorCnnTrainer():
             return torch.nn.BCEWithLogitsLoss()
         elif task == 'detection':
             # Fonction de coût pour la détection
-            return LocalizationLoss(1, 1, 1)
+            return LocalizationLoss(0.3, 0.2, 0.5)
         elif task == 'segmentation':
             # Fonction de coût pour la segmentation
             return torch.nn.CrossEntropyLoss()
