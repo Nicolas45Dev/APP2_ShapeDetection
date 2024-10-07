@@ -9,14 +9,14 @@ class DetectionModel(torch.nn.Module):
         self.num_classes = num_classes
         # Convolutions pour extraire les caractéristiques
         self.feature_extractor = nn.Sequential(# 1x53x53
-            nn.Conv2d(1, 8, 6, padding=0),# 8x48x48
+            nn.Conv2d(1, 8, 3, padding=1),# 8x53x53
             nn.LeakyReLU(0.1),
-            nn.MaxPool2d(2, 2),# 16x24x24
-            nn.Conv2d(8, 32, 3, padding=1),# 32x24x24
+            nn.BatchNorm2d(8),
+            nn.MaxPool2d(2, 2),# 16x26x26
+            nn.Conv2d(8, 32, 3, padding=1),# 32x26x26
             nn.LeakyReLU(0.1),
-            nn.BatchNorm2d(32),
-            nn.MaxPool2d(2, 2),# 64x12x12
-            nn.Conv2d(32, 48, 3, padding=1),# 48x12x12
+            nn.MaxPool2d(2, 2),# 32x13x13
+            nn.Conv2d(32, 48, 2, padding=0),# 48x12x12
             nn.LeakyReLU(0.1),
             nn.Conv2d(48, 32, 3, padding=1),# 32x12x12
             nn.LeakyReLU(0.1),
@@ -25,18 +25,18 @@ class DetectionModel(torch.nn.Module):
             nn.BatchNorm2d(48),
             nn.Conv2d(48, 48, 3, padding=1),# 48x12x12
             nn.LeakyReLU(0.1),
-            nn.Conv2d(48, 32, 5, padding=2),# 32x12x12
+            nn.Conv2d(48, 48, 3, padding=1),# 32x12x12
             nn.LeakyReLU(0.1),
             nn.MaxPool2d(2, 2)# 32x6x6
         )
 
         # Couche pour prédire l'existence, la position et la taille des boîtes englobantes
         # On prédit une boîte par cellule
-        self.prediction_layer = nn.Sequential(# 64x6x6
-            nn.Conv2d(32, 36, 3, padding=1),# 72x6x6
+        self.prediction_layer = nn.Sequential(# 32x6x6
+            nn.Conv2d(48, 42, 3, padding=0),# 36x4x4
             nn.LeakyReLU(0.1),
-            nn.BatchNorm2d(36),
-            nn.Conv2d(36, 3 * 7 * 7, 6, padding=0),# 147x1x1
+            nn.BatchNorm2d(42),
+            nn.Conv2d(42, 3 * 7 * 7, 4, padding=0),# 147x1x1
             nn.LeakyReLU(0.1),
             nn.Conv2d(3 * 7 * 7, 3 * 7 * 7, 3, padding=1),# 147x1x1 linéaire!
         )# nn.Conv2d(128, 3 * 7, 4, padding=2)
