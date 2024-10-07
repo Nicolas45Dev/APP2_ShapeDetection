@@ -20,6 +20,7 @@ class DetectionModel(torch.nn.Module):
         self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)#128x3x3
         self.conv3 = nn.Conv2d(in_channels=48, out_channels=96, kernel_size=3, stride=1, padding=1)#96x6x6
         self.relu3 = nn.ReLU()
+        self.bn0 = nn.BatchNorm2d(96)
         self.conv4 = nn.Conv2d(in_channels=96, out_channels=96, kernel_size=3, stride=1, padding=1)#96x6x6
         self.relu4 = nn.ReLU()
         self.conv5 = nn.Conv2d(in_channels=96, out_channels=48, kernel_size=3, stride=1, padding=1)#48x6x6

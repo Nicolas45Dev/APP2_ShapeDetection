@@ -65,7 +65,7 @@ class ConveyorCnnTrainer():
             return torch.nn.BCEWithLogitsLoss()
         elif task == 'detection':
             # Fonction de coût pour la détection
-            return LocalizationLoss(2, 1, 1)
+            return LocalizationLoss(.5, 1, 1)
         elif task == 'segmentation':
             # Fonction de coût pour la segmentation
             return torch.nn.CrossEntropyLoss()

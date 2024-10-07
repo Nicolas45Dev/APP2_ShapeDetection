@@ -105,8 +105,8 @@ class LocalizationLoss(nn.Module):
             class_distance = torch.cdist(predictions_class, targets_class, p=2)
             presence_distance = torch.cdist(predictions[:, 0].unsqueeze(1), targets[:, 0].unsqueeze(1), p=2)
 
-            presence_mask = target_confiance > 0
-            total_distance = distance + (self._alpha * class_distance) + (self._beta * presence_distance)
+            presence_mask = target_confiance > 0.1
+            total_distance = self._alpha * presence_distance + self._beta * distance + self._gamma * class_distance
 
             row, col = linear_sum_assignment(total_distance.detach().cpu().numpy())
 
@@ -122,7 +122,6 @@ class LocalizationLoss(nn.Module):
                     loss += mse + presence_loss + class_loss
                 else:
                     presence_loss = self.BCELoss(pred_confiance, target_confiance)
-
-                    loss += presence_loss
+                    loss += presence_loss * self._alpha
 
         return loss / target.size(0)
