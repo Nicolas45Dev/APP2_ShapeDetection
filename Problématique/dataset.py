@@ -41,6 +41,7 @@ class ConveyorSimulator(Dataset):
             size = self._metadata[img_id]['size'][i]
             pos_x, pos_y = self._metadata[img_id]['position'][i]
             class_label = SHAPE_TO_CLASS[self._metadata[img_id]['shape'][i]]
+            # if class_label == 1:
             boxes[i] = [1, pos_x, pos_y, size, class_label]
             class_labels[class_label] = 1
 
