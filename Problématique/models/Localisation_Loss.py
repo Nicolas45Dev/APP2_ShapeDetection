@@ -29,4 +29,4 @@ class LocalizationLoss(nn.Module):
         class_loss = self.CrossEntropyLoss(output[:,:,4:], target[:,:,4].long())
         # y = 1 / (self._alpha + self._beta + self._gamma)
 
-        return  self._alpha * presence_loss + self._beta * MSEloss + self._gamma * class_loss
+        return  self._beta * MSEloss + self._gamma * class_loss
