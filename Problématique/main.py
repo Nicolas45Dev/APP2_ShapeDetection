@@ -113,7 +113,7 @@ class ConveyorCnnTrainer():
             test_loss, test_metric.get_name(), test_metric.get_value()))
 
         prediction = self._model(image)
-        visualizer.show_prediction(image[0], prediction[0], segmentation_target[0], boxes[0], class_labels[0])
+        visualizer.show_prediction(image[2], prediction[0], segmentation_target[0], boxes[0], class_labels[0])
 
     def train(self):
         epochs_train_losses = []

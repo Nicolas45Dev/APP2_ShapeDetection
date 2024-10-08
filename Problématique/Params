@@ -1,5 +1,5 @@
 --mode train --task classification --batch_size 16 --epochs 65 --lr 0.00035 --use_gpu
 
---mode train --task detection --batch_size 16 --epochs 160 --lr 0.0003 --use_gpu
+--mode train --task detection --batch_size 16 --epochs 70 --lr 0.0003 --use_gpu
 
 --mode train --task segmentation --batch_size 24 --epochs 50 --lr 0.00075 --use_gpu
